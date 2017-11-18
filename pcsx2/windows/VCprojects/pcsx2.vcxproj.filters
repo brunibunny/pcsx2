@@ -938,6 +938,9 @@
     <ClCompile Include="..\..\Netplay\gui\NetplayLobbyPanel.cpp">
       <Filter>AppHost\Netplay\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Netplay\shoryu\zed_net.cpp">
+      <Filter>AppHost\Netplay\shoryu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Patch.h">
@@ -1460,6 +1463,9 @@
       <Filter>Recording\gui</Filter>
     <ClInclude Include="..\..\Netplay\gui\NetplayLobbyPanel.h">
       <Filter>AppHost\Netplay\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Netplay\shoryu\zed_net.h">
+      <Filter>AppHost\Netplay\shoryu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
