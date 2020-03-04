@@ -463,6 +463,11 @@ private:
 		GLuint timer() { return timer_query[last_query]; }
 	} m_profiler;
 
+	struct {
+		bool shader_config = false;
+		bool shader_glsl   = false;
+	} m_externalfx_log;
+
 	GLuint m_vs[1<<1];
 	GLuint m_gs[1<<3];
 	GLuint m_ps_ss[1<<7];
