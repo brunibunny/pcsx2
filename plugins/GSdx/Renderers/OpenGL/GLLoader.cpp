@@ -214,30 +214,24 @@ namespace GLLoader {
 		// Name changed but driver is still bad!
 		if (strstr(vendor, "Advanced Micro Devices") || strstr(vendor, "ATI Technologies Inc.") || strstr(vendor, "ATI"))
 			vendor_id_amd = true;
-		/*if (vendor_id_amd && (
-				strstr((const char*)&s[v], " 10.") || // Blacklist all 2010 AMD drivers.
-				strstr((const char*)&s[v], " 11.") || // Blacklist all 2011 AMD drivers.
-				strstr((const char*)&s[v], " 12.") || // Blacklist all 2012 AMD drivers.
-				strstr((const char*)&s[v], " 13.") || // Blacklist all 2013 AMD drivers.
-				strstr((const char*)&s[v], " 14.") || // Blacklist all 2014 AMD drivers.
-				strstr((const char*)&s[v], " 15.") || // Blacklist all 2015 AMD drivers.
-				strstr((const char*)&s[v], " 16.") || // Blacklist all 2016 AMD drivers.
-				strstr((const char*)&s[v], " 17.") // Blacklist all 2017 AMD drivers for now.
-				))
-			amd_legacy_buggy_driver = true;
-		*/
+
 		if (strstr(vendor, "NVIDIA Corporation"))
 			vendor_id_nvidia = true;
 
 #ifdef _WIN32
 		if (strstr(vendor, "Intel"))
 			vendor_id_intel = true;
+		
+		// AMD SSO issue has been fixed since 2019, intel is still broken (Kaby Lake confirmed).
+		// Note: Working driver on AMD is for GCN and above, anything older will be broken and not supported.
+		buggy_sso_dual_src = vendor_id_intel;
 #else
-		// On linux assumes the free driver if it isn't nvidia or amd pro driver
+		// On linux assumes the free driver if it isn't nvidia or amd pro driver.
 		mesa_driver = !vendor_id_nvidia && !vendor_id_amd;
+
+		// Linux needs to be tested if the workaround is still needed on AMD.
+		buggy_sso_dual_src = vendor_id_intel || vendor_id_amd;
 #endif
-		// As of 2019 SSO is still broken on intel (Kaby Lake confirmed).
-		buggy_sso_dual_src = vendor_id_intel || vendor_id_amd /*|| amd_legacy_buggy_driver*/;
 
 		if (theApp.GetConfigI("override_geometry_shader") != -1) {
 			found_geometry_shader = theApp.GetConfigB("override_geometry_shader");
