@@ -163,7 +163,6 @@ void UI_DisableEverything()
 	sMainFrame.EnableMenuItem( MenuId_Config_SysSettings, false );
 	sMainFrame.EnableMenuItem( MenuId_Config_McdSettings, false );
 	sMainFrame.EnableMenuItem( MenuId_Config_AppSettings, false );
-	sMainFrame.EnableMenuItem( MenuId_Config_GameDatabase, false );
 	sMainFrame.EnableMenuItem( MenuId_Config_BIOS, 	false );
 	sMainFrame.EnableMenuItem( MenuId_Config_Language, false );
 	sMainFrame.EnableMenuItem( MenuId_Config_ResetAll, false );
@@ -203,7 +202,6 @@ void UI_EnableEverything()
 	sMainFrame.EnableMenuItem( MenuId_Config_SysSettings, true );
 	sMainFrame.EnableMenuItem( MenuId_Config_McdSettings, true );
 	sMainFrame.EnableMenuItem( MenuId_Config_AppSettings, true );
-	sMainFrame.EnableMenuItem( MenuId_Config_GameDatabase, true );
 	sMainFrame.EnableMenuItem( MenuId_Config_BIOS, 	true );
 	sMainFrame.EnableMenuItem( MenuId_Config_Language, true );
 	sMainFrame.EnableMenuItem( MenuId_Config_ResetAll, true );
