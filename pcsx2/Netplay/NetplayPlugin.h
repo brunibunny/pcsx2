@@ -3,6 +3,7 @@
 #include "IopCommon.h"
 #include "App.h"
 #include "IOPHook.h"
+#undef _Target_
 
 class INetplayPlugin : public IOPHook
 {

@@ -1,5 +1,6 @@
 #pragma once
 #include "IOPHook.h"
+#undef _Target_
 
 class IReplayPlugin : public IOPHook
 {

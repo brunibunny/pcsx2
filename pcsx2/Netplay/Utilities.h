@@ -6,6 +6,7 @@
 #include <mutex>
 #include <unordered_map>
 #include "PS2Edefs.h"
+#include <functional>
 
 class Utilities
 {

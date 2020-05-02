@@ -4,6 +4,7 @@
 #include "NetplayDialogBase.h"
 #include "AppConfig.h"
 #include "Netplay\NetplaySettings.h"
+#include <functional>
 
 class NetplaySettingsPanel : public NetplaySettingsPanelBase
 {
