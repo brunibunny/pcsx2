@@ -389,7 +389,6 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 	wxSize backsize(m_background->GetBitmap().GetWidth(), m_background->GetBitmap().GetHeight());
 
 	wxString wintitle;
-	/*
 	if( PCSX2_isReleaseVersion )
 	{
 		// stable releases, with a simple title.
@@ -405,8 +404,7 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 					PCSX2_VersionLo, SVN_REV, SVN_MODS ? L"m" : wxEmptyString );
 		}
 	}
-	*/
-	wintitle.Printf( _("PCSX2 Online-2012.01.22 + PCSX2 2017.10.25") );
+	//wintitle.Printf( _("PCSX2 Online-2012.01.22 + PCSX2 2017.10.25") );
 
 	SetTitle( wintitle );
 

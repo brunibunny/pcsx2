@@ -769,7 +769,7 @@ Pcsx2App::Pcsx2App()
 	m_id_Disassembler	= wxID_ANY;
 	m_ptr_ProgramLog	= NULL;
 
-	SetAppName( L"PCSX2" );
+	SetAppName( L"PCSX2-Online" );
 	BuildCommandHash();
 }
 
