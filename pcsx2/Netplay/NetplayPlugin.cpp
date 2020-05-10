@@ -217,7 +217,7 @@ public:
     {
         if (caller == "host") {
 
-            _dialog->SetStatus(wxT("Memory card synchronization..."));
+            _dialog->SetStatus(wxT("Waiting for memory card synchronization..."));
 
             auto uncompressed_mcd = Utilities::ReadMCD(0, 0);
             if (_replay)
@@ -253,11 +253,11 @@ public:
                 _session->queue_data(data);
             }
         } else {
-            _dialog->SetStatus(wxT("Memory card synchronization..."));
+            _dialog->SetStatus(wxT("Synchronizing memory card with the host..."));
 
             _mcd_backup = Utilities::ReadMCD(0, 0);
 
-            shoryu::msec timeout_timestamp = shoryu::time_ms() + 30000;
+            shoryu::msec timeout_timestamp = shoryu::time_ms() + 480000;
             size_t mcd_size = Utilities::GetMCDSize(0, 0);
             Utilities::block_type compressed_mcd(mcd_size);
             size_t pos = 0;
@@ -273,7 +273,7 @@ public:
                 }
                 if (!ready) {
                     if (timeout_timestamp < shoryu::time_ms()) {
-                        ConsoleErrorMT(wxT("NETPLAY: Timeout while synchonizing memory cards."));
+                        ConsoleErrorMT(wxT("NETPLAY: Timeout while synchronizing memory cards."));
                         return false;
                     }
                 } else {
@@ -333,6 +333,7 @@ public:
 
 				// show chat window
 				_dialog->OnConnectionEstablished(_session->delay());
+                _dialog->SetStatus(wxT("Connected."));
 			}
 
             // Wait for the mcd sync signal
@@ -343,8 +344,12 @@ public:
             // Start the mcd sync
 			mcd_sync("client");
 
+            _dialog->SetStatus(wxT("Synchronized. Waiting for host..."));
+
             // Wait for the delay signal
             _session->wait_for_start(ep);
+
+            _dialog->SetStatus(wxT("Game started."));
             return true;
 		}
 		return false;
@@ -393,6 +398,8 @@ public:
 
 			// Wait for the ready signal from all clients
             _session->wait_for_start(ep);
+
+			_dialog->SetStatus(wxT("Game started."));
 
 			{
 				recursive_lock lock(_mutex);
