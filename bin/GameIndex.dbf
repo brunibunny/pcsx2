@@ -7333,6 +7333,15 @@ Compat = 4
 Serial = SLES-50267
 Name   = CART Fury Championship Racing
 Region = PAL-M5
+[patches = 2547FF67]
+	author=Nachbrenner
+	// Skip PSX2_Mpeg_PlayFile__FPc.
+	patch=0,EE,00107a00,word,03e00008
+	patch=0,EE,00107a04,word,24020001
+	// Skip SuperSync__Fi.
+	patch=0,EE,00100eb0,word,03e00008
+	patch=0,EE,00100eb4,word,24020001
+[/patches]
 ---------------------------------------------
 Serial = SLES-50268
 Name   = SpyHunter
@@ -15977,6 +15986,7 @@ Name   = Let's Make a Soccer Team!
 Region = PAL-M5
 Compat = 5
 eeClampMode = 3 // Makes the game to correctly register left and right Dpad button input.
+MemCardFilter = SLES-54151/SLES-54153 // Enables import of players from completed career saves.
 ---------------------------------------------
 Serial = SLES-54152
 Name   = Ant Bully, The
@@ -15985,6 +15995,7 @@ Region = PAL-M5
 Serial = SLES-54153
 Name   = Virtua Pro Football
 Region = PAL-M5
+MemCardFilter = SLES-54153/SLES-54151 // Enables import of teams.
 ---------------------------------------------
 Serial = SLES-54154
 Name   = D-Unit Drift Racing
@@ -26950,6 +26961,7 @@ Serial = SLPM-66316
 Name   = Pro Soccer Club o Tsukurou! Europe Championship
 Region = NTSC-J
 eeClampMode = 3 // Makes the game to correctly register left and right Dpad button input.
+MemCardFilter = SLPM-66316/SLPM-66324/SLPM-66442 // Enables import of players from completed career saves.
 ---------------------------------------------
 Serial = SLPM-66317
 Name   = Capcom Classics Collection Vol.1
@@ -26983,6 +26995,7 @@ Region = NTSC-J
 Serial = SLPM-66324
 Name   = World Football Climax
 Region = NTSC-J
+MemCardFilter = SLPM-66324/SLPM-66316/SLPM-66442 // SLPM-66316 enables import of teams.
 ---------------------------------------------
 Serial = SLPM-66325
 Name   = Castlevania - Lament of Innocence [Konami Palace Selection]
@@ -27375,6 +27388,11 @@ Region = NTSC-J
 Serial = SLPM-66441
 Name   = Oookuki
 Region = NTSC-J
+---------------------------------------------
+Serial = SLPM-66442
+Name = World Football Climax
+Region = NTSC-J
+MemCardFilter = SLPM-66442/SLPM-66316/SLPM-66324 // SLPM-66316 enables import of teams.
 ---------------------------------------------
 Serial = SLPM-66443
 Name   = FIFA Street 2
@@ -35636,7 +35654,7 @@ Name   = CART Fury - Championship Racing
 Region = NTSC-U
 Compat = 5
 [patches = 116154AD]
-	comment=patches by Nachbrenner
+	author=Nachbrenner
 	// Skip PSX2_Mpeg_PlayFile__FPc.
 	patch=0,EE,00107a00,word,03e00008
 	patch=0,EE,00107a04,word,24020001
