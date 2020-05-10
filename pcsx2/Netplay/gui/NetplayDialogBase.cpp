@@ -42,7 +42,7 @@ NetplayDialogBase::NetplayDialogBase( wxWindow* parent, wxWindowID id, const wxS
 	
 	this->SetSizer( bSizer4 );
 	this->Layout();
-	
+    this->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	this->Centre( wxBOTH );
 	
 	// Connect Events
