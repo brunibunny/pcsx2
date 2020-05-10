@@ -213,6 +213,96 @@ public:
 		});
 	}
 
+	bool mcd_sync(const wxString &caller)
+    {
+        if (caller == "host") {
+
+            _dialog->SetStatus(wxT("Memory card synchronization..."));
+
+            auto uncompressed_mcd = Utilities::ReadMCD(0, 0);
+            if (_replay)
+                _replay->Data(uncompressed_mcd);
+            size_t mcd_size = Utilities::GetMCDSize(0, 0);
+            Utilities::block_type compressed_mcd(mcd_size);
+            if (g_Conf->Netplay.ReadonlyMemcard)
+                _mcd_backup = uncompressed_mcd;
+            if (!Utilities::Compress(uncompressed_mcd, compressed_mcd)) {
+                ConsoleErrorMT(wxT("NETPLAY: Unable to compress MCD buffer."));
+                return false;
+            }
+
+            {
+                recursive_lock lock(_mutex);
+                if (!_session || _session->state() != shoryu::MessageType::Ready)
+                    return false;
+                size_t blockSize = 128;
+                for (size_t i = 0; i < compressed_mcd.size(); i += blockSize) {
+                    shoryu::message_data data;
+                    data.data_length = compressed_mcd.size() - i;
+                    if (data.data_length > blockSize)
+                        data.data_length = blockSize;
+                    data.p.reset(new char[data.data_length]);
+                    std::copy(compressed_mcd.data() + i, compressed_mcd.data() + i + data.data_length, data.p.get());
+                    _session->queue_data(data);
+                }
+                shoryu::message_data data;
+                data.data_length = 9;
+                data.p.reset(new char[data.data_length]);
+                char *blockEndMsg = "BLOCK_END";
+                std::copy(blockEndMsg, blockEndMsg + data.data_length, data.p.get());
+                _session->queue_data(data);
+            }
+        } else {
+            _dialog->SetStatus(wxT("Memory card synchronization..."));
+
+            _mcd_backup = Utilities::ReadMCD(0, 0);
+
+            shoryu::msec timeout_timestamp = shoryu::time_ms() + 30000;
+            size_t mcd_size = Utilities::GetMCDSize(0, 0);
+            Utilities::block_type compressed_mcd(mcd_size);
+            size_t pos = 0;
+            while (true) {
+                bool ready;
+                shoryu::message_data data;
+                {
+                    recursive_lock lock(_mutex);
+                    if (!_session || _session->end_session_request())
+                        return false;
+                    _session->send();
+                    ready = _session->get_data(0, data, 50);
+                }
+                if (!ready) {
+                    if (timeout_timestamp < shoryu::time_ms()) {
+                        ConsoleErrorMT(wxT("NETPLAY: Timeout while synchonizing memory cards."));
+                        return false;
+                    }
+                } else {
+                    if (data.data_length != 9 || memcmp(data.p.get(), "BLOCK_END", 9) != 0) {
+                        std::copy(data.p.get(), data.p.get() + data.data_length, compressed_mcd.data() + pos);
+                        pos += data.data_length;
+                    } else {
+                        compressed_mcd.resize(pos);
+                        Utilities::block_type uncompressed_mcd(mcd_size);
+
+                        if (!Utilities::Uncompress(compressed_mcd, uncompressed_mcd)) {
+                            ConsoleErrorMT(wxT("NETPLAY: Unable to decompress MCD buffer."));
+                            return false;
+                        }
+                        if (uncompressed_mcd.size() != mcd_size) {
+                            ConsoleErrorMT(wxT("NETPLAY: Invalid MCD received from host."));
+                            return false;
+                        }
+                        Utilities::WriteMCD(0, 0, uncompressed_mcd);
+                        if (_replay)
+                            _replay->Data(uncompressed_mcd);
+                        break;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
 	bool Join(const wxString& ip, unsigned short port, int timeout)
 	{
 		std::unique_lock<std::mutex> connection_lock(_connection_mutex);
@@ -245,8 +335,17 @@ public:
 				_dialog->OnConnectionEstablished(_session->delay());
 			}
 
-			// wait for delay from host
-			return _session->wait_for_start();
+            // Wait for the mcd sync signal
+            int delay = _session->wait_for_mcd();
+            if (delay <= 0)
+                return false;
+
+            // Start the mcd sync
+			mcd_sync("client");
+
+            // Wait for the delay signal
+            _session->wait_for_start(ep);
+            return true;
 		}
 		return false;
 	}
@@ -261,6 +360,7 @@ public:
 
 		if (auto state = Utilities::GetSyncState())
 		{
+            zed_net_address_t ep;
 			if(_replay)
 				_replay->SyncState(*state);
 
@@ -285,6 +385,15 @@ public:
 			if(delay <= 0)
 				return false;
 
+            // Send mcd sync signal
+            _session->announce_mcd();
+
+            // Start the mcd sync
+            mcd_sync("host");
+
+			// Wait for the ready signal from all clients
+            _session->wait_for_start(ep);
+
 			{
 				recursive_lock lock(_mutex);
 
@@ -298,9 +407,7 @@ public:
 				_session->reannounce_delay();
 
 			}
-
-			// wait for ready from all clients
-			return _session->wait_for_start();
+            return true;
 		}
 		return false;
 	}

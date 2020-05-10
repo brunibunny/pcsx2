@@ -22,6 +22,7 @@ namespace shoryu
 		Info, //side, all endpoints, delay
 		Delay, //set delay
 		Ready, //send to eps, after all eps answered - start the game
+		MCDSync,
 		EndSession,
 		Chat
 	};
@@ -36,6 +37,7 @@ namespace shoryu
 		"Info  ",
 		"Delay ",
 		"Ready ",
+        "MCDsyn",
 		"EndSn ",
 		"Chat  "
 	};
@@ -293,7 +295,36 @@ namespace shoryu
 			}
 		}
 
-		bool wait_for_start()
+		bool wait_for_mcd()
+        {
+            if (m_host) {
+                throw std::exception("invalid caller");
+            } else {
+                auto pred = [&]() -> bool {
+                    if (_current_state != MessageType::Ready)
+                        return true;
+
+                    if (!mcd_sync) {
+                        return false;
+                    }
+                    return true;
+                };
+
+                std::unique_lock<std::mutex> lock(_connection_mutex);
+                while (!pred())
+                    _connection_cv.wait_for(lock, std::chrono::seconds(1), pred);
+            }
+
+            if (_current_state != MessageType::Ready)
+                return false;
+
+            // switch to new handlers
+            connection_established();
+
+            return true;
+        }
+
+		bool wait_for_start(const zed_net_address_t &ep)
 		{
 			if (m_host)
 			{
@@ -320,6 +351,12 @@ namespace shoryu
 			}
 			else
 			{
+				// send ready
+                _current_state = MessageType::Ready;
+                _async.queue(ep, message_type(MessageType::Ready));
+                send(ep);
+                _connection_cv.notify_all();
+
 				auto pred = [&]() -> bool {
 					if (_current_state != MessageType::Ready)
 						return true;
@@ -481,6 +518,15 @@ namespace shoryu
 			send();
 		}
 
+		inline void announce_mcd()
+        {
+            std::unique_lock<std::mutex> lock(_mutex);
+            message_type msg(MessageType::MCDSync);
+
+            queue_message(msg);
+            send();
+        }
+
 		inline void queue_info()
 		{
 			message_type msg(MessageType::Info);
@@ -531,7 +577,7 @@ namespace shoryu
 			};
 			if(timeout > 0)
 			{
-				if(!_data_cond.timed_wait(lock, std::chrono::milliseconds(timeout), pred))
+				if(!_data_cond.wait_for(lock, std::chrono::milliseconds(timeout), pred))
 					return false;
 			}
 			else
@@ -948,15 +994,12 @@ namespace shoryu
 			if(msg.cmd == MessageType::Delay)
 			{
 				delay(msg.delay);
-				_current_state = MessageType::Ready;
-				_async.queue(ep, message_type(MessageType::Ready));
-				send(ep);
-#ifdef SHORYU_ENABLE_LOG
-				log << "[" << time_ms() - log_start << "] Ready --> " << zed_net_host_to_str(ep.host) << ":" << ep.port << "\n";
-#endif
-				m_ready = true;
 				_connection_cv.notify_all();
 			}
+            if (msg.cmd == MessageType::MCDSync) {
+                mcd_sync = true;
+                _connection_cv.notify_all();
+            }
 			if (msg.cmd == MessageType::Ping)
 			{
 				message_type msg;
@@ -1030,6 +1073,7 @@ namespace shoryu
 				if(msg.cmd == MessageType::Delay)
 				{
 					std::unique_lock<std::mutex> lock(_mutex);
+                    m_ready = true;
 					delay(msg.delay);
 					if (m_host || side == 0)
 						send(ep);
@@ -1067,6 +1111,7 @@ namespace shoryu
 		username_map _username_map;
 		std::vector<zed_net_address_t> m_ready_list;
 		bool m_ready;
+        bool mcd_sync;
 
 		std::string _last_error;
 
