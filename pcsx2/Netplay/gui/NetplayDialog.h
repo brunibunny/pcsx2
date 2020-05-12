@@ -5,7 +5,7 @@
 #include "PrecompiledHeader.h"
 #include "NetplayDialogBase.h"
 #include "AppConfig.h"
-#include "Netplay\NetplaySettings.h"
+#include "Netplay/NetplaySettings.h"
 #include "NetplaySettingsPanel.h"
 #pragma once
 #include "NetplayLobbyPanel.h"

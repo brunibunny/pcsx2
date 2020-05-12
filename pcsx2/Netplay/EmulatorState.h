@@ -2,7 +2,7 @@
 
 #include "App.h"
 #include <cstdint>
-#include "shoryu\archive.h"
+#include "shoryu/archive.h"
 struct EmulatorSyncState
 {
 	EmulatorSyncState();

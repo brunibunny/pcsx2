@@ -18,8 +18,8 @@
 #include "AppForwardDefs.h"
 #include "PathDefs.h"
 #include "CDVD/CDVDaccess.h"
-#include "Netplay\NetplaySettings.h"
-#include "Netplay\ReplaySettings.h"
+#include "Netplay/NetplaySettings.h"
+#include "Netplay/ReplaySettings.h"
 #include <memory>
 
 enum DocsModeType

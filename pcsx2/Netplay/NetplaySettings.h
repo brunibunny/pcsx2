@@ -1,5 +1,5 @@
 #pragma once
-#include "Utilities\IniInterface.h"
+#include "Utilities/IniInterface.h"
 
 enum NetplayMode : int
 {
