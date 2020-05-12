@@ -396,6 +396,9 @@ public:
             // Start the mcd sync
             mcd_sync("host");
 
+			// Start the mcd send loop
+			mcd_send_thread.reset(new std::thread(&NetplayPlugin::mcd_send_loop, this));
+
 			// Wait for the ready signal from all clients
             _session->wait_for_start(ep);
 
@@ -418,6 +421,30 @@ public:
 		}
 		return false;
 	}
+
+	void mcd_send_loop()
+    {
+        shoryu::msec timeout_timestamp = shoryu::time_ms() + 480000;
+        while (true) {
+            {
+                recursive_lock lock(_mutex);
+                if (!_session || _session->state() != shoryu::MessageType::Ready)
+                    return;
+                if (!_session->send())
+                    break;
+                if (_session->end_session_request())
+                    return;
+                if (_session->first_received_frame() != -1) {
+                    _session->clear_queue();
+                    break;
+                }
+            }
+            if (timeout_timestamp < shoryu::time_ms()) {
+                ConsoleErrorMT(wxT("NETPLAY: Timeout while synchonizing memory cards."));
+                return;
+            }
+        }
+    }
 
 	void EndSession()
 	{
@@ -695,6 +722,7 @@ protected:
 	bool _is_initialized;
 	bool _is_stopped;
 	std::condition_variable _ready_to_connect_cond;
+    std::unique_ptr<std::thread> mcd_send_thread;
 	std::mutex _connection_mutex;
 	wxString _game_name;
 	Message _my_frame;
