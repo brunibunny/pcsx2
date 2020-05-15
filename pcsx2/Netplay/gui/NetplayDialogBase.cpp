@@ -72,6 +72,14 @@ NetplaySettingsPanelBase::NetplaySettingsPanelBase( wxWindow* parent, wxWindowID
 	bSizer12->Add( m_usernameLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
 	m_usernameTextCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	#ifdef __WXGTK__
+	if ( !m_usernameTextCtrl->HasFlag( wxTE_MULTILINE ) )
+	{
+	m_usernameTextCtrl->SetMaxLength( 16 );
+	}
+	#else
+	m_usernameTextCtrl->SetMaxLength( 16 );
+	#endif
 	bSizer12->Add( m_usernameTextCtrl, 1, wxALL|wxEXPAND, 5 );
 
 
