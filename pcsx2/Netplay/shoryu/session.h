@@ -67,6 +67,7 @@ namespace shoryu
 		uint32_t rand_seed;
 		uint8_t delay;
 		uint8_t side;
+        bool mcdsync;
 		uint8_t num_players;
 		T frame;
 		message_data data;
@@ -107,7 +108,7 @@ namespace shoryu
 				frame.serialize(a);
 				break;
 			case MessageType::Info:
-				a << rand_seed << side << num_players;
+				a << rand_seed << side << mcdsync << num_players;
 				for(size_t i = 0; i < num_players; i++)
 				{
 					length = usernames[i].length();
@@ -177,7 +178,7 @@ namespace shoryu
 				frame.deserialize(a);
 				break;
 			case MessageType::Info:
-				a >> rand_seed >> side >> num_players;
+				a >> rand_seed >> side >> mcdsync >> num_players;
 				repeat(num_players)
 				{
 					size_t length;
@@ -304,7 +305,7 @@ namespace shoryu
                     if (_current_state != MessageType::Ready)
                         return true;
 
-                    if (!mcd_sync) {
+                    if (!mcd_sync_begin) {
                         return false;
                     }
                     return true;
@@ -399,6 +400,7 @@ namespace shoryu
 			try_prepare();
 			m_host = true;
 			m_num_players = 1;
+            m_mcd_sync = g_Conf->Netplay.MemcardSync;
 			if(m_userlist_handler)
 			{
 				std::vector<std::string> list;
@@ -532,6 +534,7 @@ namespace shoryu
 			message_type msg(MessageType::Info);
 			msg.rand_seed = (uint32_t)time(0);
 			msg.state = _state;
+            msg.mcdsync = m_mcd_sync;
 			msg.num_players = m_num_players;
 			msg.usernames.push_back(_username);
 			for (auto &ep : m_clientEndpoints)
@@ -714,6 +717,10 @@ namespace shoryu
 		{
 			return _side;
 		}
+        bool mcd_sync()
+        {
+            return m_mcd_sync;
+        }
 		bool _shutdown;
 		void shutdown()
 		{
@@ -976,6 +983,7 @@ namespace shoryu
 			if(msg.cmd == MessageType::Info)
 			{
 				_side = msg.side;
+                m_mcd_sync = msg.mcdsync;
 				m_num_players = msg.num_players;
 				std::srand(msg.rand_seed);
 				_current_state = MessageType::Ready;
@@ -997,7 +1005,7 @@ namespace shoryu
 				_connection_cv.notify_all();
 			}
             if (msg.cmd == MessageType::MCDSync) {
-                mcd_sync = true;
+				mcd_sync_begin = true;
                 _connection_cv.notify_all();
             }
 			if (msg.cmd == MessageType::Ping)
@@ -1111,13 +1119,14 @@ namespace shoryu
 		username_map _username_map;
 		std::vector<zed_net_address_t> m_ready_list;
 		bool m_ready;
-        bool mcd_sync;
+        bool mcd_sync_begin;
 
 		std::string _last_error;
 
 		async_transport<message_type> _async;
 		endpoint_container m_clientEndpoints;
 		int m_num_players;
+        bool m_mcd_sync;
 		frame_table _frame_table;
 		std::mutex _mutex;
 		std::mutex _error_mutex;

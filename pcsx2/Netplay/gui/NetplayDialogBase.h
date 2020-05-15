@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Nov  6 2017)
+// C++ code generated with wxFormBuilder (version Oct 26 2018)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef __NETPLAYDIALOGBASE_H__
-#define __NETPLAYDIALOGBASE_H__
+#pragma once
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
@@ -24,12 +23,12 @@
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
 #include <wx/spinctrl.h>
-#include <wx/panel.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
-#include <wx/notebook.h>
+#include <wx/panel.h>
 #include <wx/statbox.h>
+#include <wx/notebook.h>
 #include <wx/listbox.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -38,37 +37,37 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// Class NetplayDialogBase
 ///////////////////////////////////////////////////////////////////////////////
-class NetplayDialogBase : public wxFrame 
+class NetplayDialogBase : public wxFrame
 {
 	private:
-	
+
 	protected:
 		wxStaticText* m_statusText;
 		wxStaticLine* m_staticline1;
 		wxBoxSizer* m_contentSizer;
 		wxStdDialogButtonSizer* m_dialogButtonSizer;
 		wxButton* m_dialogButtonSizerCancel;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnCancelButtonClick( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
-		
+
 		NetplayDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Netplay - PCSX2"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 250,-1 ), long style = wxCAPTION|wxCLOSE_BOX|wxSYSTEM_MENU );
-		
+
 		~NetplayDialogBase();
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class NetplaySettingsPanelBase
 ///////////////////////////////////////////////////////////////////////////////
-class NetplaySettingsPanelBase : public wxPanel 
+class NetplaySettingsPanelBase : public wxPanel
 {
 	private:
-	
+
 	protected:
 		wxStaticText* m_usernameLabel;
 		wxTextCtrl* m_usernameTextCtrl;
@@ -86,28 +85,29 @@ class NetplaySettingsPanelBase : public wxPanel
 		wxSpinCtrl* m_listenPortSpinCtrl;
 		wxStaticText* m_hostNumPlayersLabel;
 		wxSpinCtrl* m_hostNumPlayersSpinCtrl;
+		wxCheckBox* m_MCDSyncCheckBox;
 		wxCheckBox* m_readOnlyMCDCheckBox;
 		wxButton* m_hostButton;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnConnect( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnHost( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
-		
-		NetplaySettingsPanelBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 287,272 ), long style = wxTAB_TRAVERSAL ); 
+
+		NetplaySettingsPanelBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 295,284 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
 		~NetplaySettingsPanelBase();
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class NetplayLobbyPanelBase
 ///////////////////////////////////////////////////////////////////////////////
-class NetplayLobbyPanelBase : public wxPanel 
+class NetplayLobbyPanelBase : public wxPanel
 {
 	private:
-	
+
 	protected:
 		wxTextCtrl* m_NetplayChatTextCtrl;
 		wxTextCtrl* m_NetplayConsoleEntryTextCtrl;
@@ -118,36 +118,18 @@ class NetplayLobbyPanelBase : public wxPanel
 		wxButton* m_startButton;
 		wxStaticText* m_inputDelayLabel;
 		wxSpinCtrl* m_inputDelaySpinner;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnSendText( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMoveUp( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMoveDown( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnStart( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
-		
-		NetplayLobbyPanelBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 530,336 ), long style = wxTAB_TRAVERSAL ); 
+
+		NetplayLobbyPanelBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 530,336 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
 		~NetplayLobbyPanelBase();
-	
+
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/// Class MyPanel3
-///////////////////////////////////////////////////////////////////////////////
-class MyPanel3 : public wxPanel 
-{
-	private:
-	
-	protected:
-		wxNotebook* m_notebook2;
-	
-	public:
-		
-		MyPanel3( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxTAB_TRAVERSAL ); 
-		~MyPanel3();
-	
-};
-
-#endif //__NETPLAYDIALOGBASE_H__

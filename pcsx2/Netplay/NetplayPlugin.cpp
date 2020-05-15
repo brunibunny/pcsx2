@@ -342,9 +342,12 @@ public:
                 return false;
 
             // Start the mcd sync
-			mcd_sync("client");
-
-            _dialog->SetStatus(wxT("Synchronized. Waiting for host..."));
+            if (_session->mcd_sync()) {
+                mcd_sync("client");
+                _dialog->SetStatus(wxT("Synchronized. Waiting for host..."));
+            } else {
+                _dialog->SetStatus(wxT("Waiting for host..."));
+            }
 
             // Wait for the delay signal
             _session->wait_for_start(ep);
@@ -394,7 +397,8 @@ public:
             _session->announce_mcd();
 
             // Start the mcd sync
-            mcd_sync("host");
+            if (_session->mcd_sync())
+                mcd_sync("host");
 
 			// Start the mcd send loop
 			mcd_send_thread.reset(new std::thread(&NetplayPlugin::mcd_send_loop, this));

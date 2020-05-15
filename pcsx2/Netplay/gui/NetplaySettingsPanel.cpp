@@ -34,6 +34,7 @@ void NetplaySettingsPanel::FromSettings()
 	this->m_saveReplayCheckBox->SetValue(m_settings.SaveReplay);
 
 	this->m_readOnlyMCDCheckBox->SetValue(m_settings.ReadonlyMemcard);
+	this->m_MCDSyncCheckBox->SetValue(m_settings.MemcardSync);
 }
 void NetplaySettingsPanel::ToSettings()
 {
@@ -56,6 +57,8 @@ void NetplaySettingsPanel::ToSettings()
 	}
 
 	m_settings.ReadonlyMemcard = this->m_readOnlyMCDCheckBox->GetValue();
+
+	m_settings.MemcardSync = this->m_MCDSyncCheckBox->GetValue();
 
 	m_settings.NumPlayers = this->m_hostNumPlayersSpinCtrl->GetValue();
 
