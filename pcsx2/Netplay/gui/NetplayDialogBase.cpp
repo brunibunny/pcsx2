@@ -7,6 +7,7 @@
 
 #include "PrecompiledHeader.h"
 
+#include <App.h>
 #include "NetplayDialogBase.h"
 
 ///////////////////////////////////////////////////////////////////////////
@@ -15,6 +16,7 @@ NetplayDialogBase::NetplayDialogBase( wxWindow* parent, wxWindowID id, const wxS
 {
 	this->SetSizeHints( wxSize( 250,-1 ), wxDefaultSize );
 	this->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_MENU ) );
+    SetIcons(wxGetApp().GetIconBundle());
 
 	wxBoxSizer* bSizer4;
 	bSizer4 = new wxBoxSizer( wxVERTICAL );
