@@ -384,6 +384,7 @@ set(pcsx2GuiResources
 set(pcsx2IPUSources
 	IPU/IPU.cpp
 	IPU/IPU_Fifo.cpp
+	IPU/IPUdither.cpp
 	IPU/IPUdma.cpp
 	IPU/mpeg2lib/Idct.cpp
 	IPU/mpeg2lib/Mpeg.cpp
@@ -517,7 +518,6 @@ set(pcsx2WindowsSources
 	gui/CpuUsageProviderMSW.cpp
 	windows/cheats/browser.cpp
 	windows/cheats/cheats.cpp
-	windows/DwmSetup.cpp
 	windows/FlatFileReaderWindows.cpp
 	windows/Optimus.cpp
 	windows/PatchBrowser.cpp
