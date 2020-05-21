@@ -225,6 +225,11 @@ namespace shoryu
 		typedef std::vector<frame_map> frame_table;
 		typedef std::function<bool(const StateType&, const StateType&)> state_check_handler_type;
 		typedef std::vector<std::unordered_map<int64_t, message_data>> data_table;
+        typedef struct
+        {
+            std::string name;
+            std::string ping;
+        } userinfo;
 	public:
 #ifdef SHORYU_ENABLE_LOG
 		std::fstream log;
@@ -267,6 +272,12 @@ namespace shoryu
 					// kick anyone whom we last received a message from over 5 seconds ago
 					for (auto i_ep = m_clientEndpoints.begin(); i_ep != m_clientEndpoints.end();)
 					{
+						// update ping value
+                        _username_map[*i_ep].ping = std::to_string(_async.peer(*i_ep).rtt_avg);
+
+						// send info
+                        queue_info();
+
 						if (_async.peer(*i_ep).recv_time + 5000 < time_ms())
 						{
 #ifdef SHORYU_ENABLE_LOG
@@ -538,7 +549,7 @@ namespace shoryu
 			msg.num_players = m_num_players;
 			msg.usernames.push_back(_username);
 			for (auto &ep : m_clientEndpoints)
-				msg.usernames.push_back(_username_map[ep]);
+                msg.usernames.push_back(_username_map[ep].name + std::string(" ~ ") + _username_map[ep].ping + std::string(" ms"));
 			if (m_userlist_handler)
 				m_userlist_handler(msg.usernames);
 
@@ -883,7 +894,7 @@ namespace shoryu
 			std::unique_lock<std::mutex> lock(_connection_mutex);
 			if(msg.cmd == MessageType::Join)
 			{
-				_username_map[ep] = msg.username;
+				_username_map[ep].name = msg.username;
 				if(!_state_check_handler(_state, msg.state))
 				{
 					message_type msg(MessageType::Deny);
@@ -1114,7 +1125,7 @@ namespace shoryu
 		bool _end_session_request;
 		
 		std::string _username;
-		typedef std::map<zed_net_address_t, std::string> username_map;
+		typedef std::map<zed_net_address_t, userinfo> username_map;
 
 		username_map _username_map;
 		std::vector<zed_net_address_t> m_ready_list;
