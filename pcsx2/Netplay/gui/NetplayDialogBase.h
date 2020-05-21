@@ -85,6 +85,7 @@ class NetplaySettingsPanelBase : public wxPanel
 		wxSpinCtrl* m_listenPortSpinCtrl;
 		wxStaticText* m_hostNumPlayersLabel;
 		wxSpinCtrl* m_hostNumPlayersSpinCtrl;
+		wxCheckBox* m_ClientOnlyDelayCheckBox;
 		wxCheckBox* m_MCDSyncCheckBox;
 		wxCheckBox* m_readOnlyMCDCheckBox;
 		wxButton* m_hostButton;
@@ -96,7 +97,7 @@ class NetplaySettingsPanelBase : public wxPanel
 
 	public:
 
-		NetplaySettingsPanelBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 295,284 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
+		NetplaySettingsPanelBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 295,299 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
 		~NetplaySettingsPanelBase();
 
 };

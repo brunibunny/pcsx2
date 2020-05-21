@@ -160,6 +160,9 @@ NetplaySettingsPanelBase::NetplaySettingsPanelBase( wxWindow* parent, wxWindowID
 
 	bSizer121->Add( fgSizer3, 0, wxEXPAND, 5 );
 
+	m_ClientOnlyDelayCheckBox = new wxCheckBox( m_host, wxID_ANY, _("Apply input delay to clients only"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer121->Add( m_ClientOnlyDelayCheckBox, 0, wxALL, 5 );
+
 	wxStaticBoxSizer* sbSizer3;
 	sbSizer3 = new wxStaticBoxSizer( new wxStaticBox( m_host, wxID_ANY, _("Memory Card") ), wxVERTICAL );
 

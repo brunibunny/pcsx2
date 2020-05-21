@@ -613,13 +613,11 @@ namespace shoryu
 
 			int64_t destFrame = _frame;
 
-			// delay server by only one frame
-#ifndef NETPLAY_DELAY_SERVER
-			if (m_host)
-				destFrame += 1;
-			else
-#endif
-				destFrame += _delay;
+			if (m_host && (g_Conf->Netplay.ClientOnlyDelay)) {
+                destFrame += 1;
+            } else {
+                destFrame += _delay;
+            }
 
 			_frame_table[_side][destFrame] = frame;
 			message_type msg(MessageType::Frame);

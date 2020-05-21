@@ -8,6 +8,7 @@ NetplaySettings::NetplaySettings()
 	ListenPort = 7500;
 	Mode = ConnectMode;
 	ReadonlyMemcard = false;
+	ClientOnlyDelay = true;
 	MemcardSync = true;
 	SaveReplay = false;
 	NumPlayers = 2;
@@ -23,6 +24,7 @@ void NetplaySettings::LoadSave( IniInterface& ini )
 	IniEntry( HostPort );
 	IniEntry( HostAddress );
 	IniEntry( ReadonlyMemcard );
+	IniEntry( ClientOnlyDelay );
 	IniEntry( MemcardSync );
 	IniEntry( SaveReplay );
 	IniEntry( NumPlayers );

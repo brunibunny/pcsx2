@@ -19,6 +19,7 @@ struct NetplaySettings
 	uint ListenPort;
 	bool SaveReplay;
 	bool ReadonlyMemcard;
+	bool ClientOnlyDelay;
 	bool MemcardSync;
 	uint NumPlayers;
 	
