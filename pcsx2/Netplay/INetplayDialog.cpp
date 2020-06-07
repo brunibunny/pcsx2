@@ -168,11 +168,11 @@ public:
 			if(m_dialog) m_dialog->SetStatus(status);
 		});
 	}
-	void SetUserlist(const std::vector<std::string> &usernames)
+    void SetUserlist(const std::vector<userinfo> &usernames, int num_players)
 	{
 		Utilities::ExecuteOnMainThread([&]() {
 			if(m_dialog)
-				m_dialog->GetLobbyPanel().SetUserlist(usernames);
+				m_dialog->GetLobbyPanel().SetUserlist(usernames, num_players);
 		});
 	}
 	void AddChatMessage(const std::string &username, const std::string &message)

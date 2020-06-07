@@ -4,6 +4,9 @@
 NetplayLobbyPanel::NetplayLobbyPanel(wxWindow *parent)
     : NetplayLobbyPanelBase(parent)
 {
+    m_playersBox->InsertColumn(0, _("#"), 0, 25);
+    m_playersBox->InsertColumn(1, _("Name"), 0, 75);
+    m_playersBox->InsertColumn(2, _("Ping"), 0, 50);
 }
 
 void NetplayLobbyPanel::SetInputDelay(int value)
@@ -17,17 +20,29 @@ int NetplayLobbyPanel::GetInputDelay()
 
 void NetplayLobbyPanel::UpdateHostModeUI(bool host)
 {
+    this->m_inputDelayLabel->Enable(host);
     this->m_inputDelaySpinner->Enable(host);
+    this->m_moveUpButton->Enable(host);
+    this->m_moveDownButton->Enable(host);
+    this->m_startButton->Enable(host);
 }
 void NetplayLobbyPanel::SetStartHandler(const event_handler_type &handler)
 {
     m_start_handler = handler;
 }
-void NetplayLobbyPanel::SetUserlist(const std::vector<std::string> &usernames)
+void NetplayLobbyPanel::SetUserlist(const std::vector<userinfo> &usernames, int num_players)
 {
-    m_playersBox->Clear();
-    for (auto &str : usernames)
-        m_playersBox->Append(wxString::wxString(str));
+	if (m_playersBox->GetItemCount() < num_players)
+        m_playersBox->InsertItem(0, "itm");
+
+	if (m_playersBox->GetItemCount() > num_players)
+        m_playersBox->DeleteItem(0);
+
+    for (auto &str : usernames) {
+        m_playersBox->SetItem(str.side, 0, std::to_string(str.side + 1));
+        m_playersBox->SetItem(str.side, 1, str.name);
+        m_playersBox->SetItem(str.side, 2, str.ping);
+    }
 }
 
 void NetplayLobbyPanel::AddChatMessage(const std::string &username, const std::string &message)

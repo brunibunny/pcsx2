@@ -27,9 +27,6 @@ NetplayDialogBase::NetplayDialogBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer4->Add( m_statusText, 0, wxALL|wxEXPAND, 7 );
 
-	m_staticline1 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	bSizer4->Add( m_staticline1, 0, wxEXPAND, 5 );
-
 	m_contentSizer = new wxBoxSizer( wxVERTICAL );
 
 
@@ -256,7 +253,9 @@ NetplayLobbyPanelBase::NetplayLobbyPanelBase( wxWindow* parent, wxWindowID id, c
 	wxStaticBoxSizer* sbSizer2;
 	sbSizer2 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Players") ), wxVERTICAL );
 
-	m_playersBox = new wxListBox( sbSizer2->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	m_playersBox = new wxListCtrl( sbSizer2->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_ICON|wxLC_REPORT|wxLC_SINGLE_SEL );
+	m_playersBox->SetMaxSize( wxSize( 150,-1 ) );
+
 	sbSizer2->Add( m_playersBox, 1, wxEXPAND, 5 );
 
 	m_moveUpButton = new wxButton( sbSizer2->GetStaticBox(), wxID_ANY, _("Move up"), wxDefaultPosition, wxDefaultSize, 0 );

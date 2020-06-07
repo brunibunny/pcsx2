@@ -16,7 +16,6 @@
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
-#include <wx/statline.h>
 #include <wx/sizer.h>
 #include <wx/button.h>
 #include <wx/frame.h>
@@ -29,7 +28,7 @@
 #include <wx/panel.h>
 #include <wx/statbox.h>
 #include <wx/notebook.h>
-#include <wx/listbox.h>
+#include <wx/listctrl.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -43,7 +42,6 @@ class NetplayDialogBase : public wxFrame
 
 	protected:
 		wxStaticText* m_statusText;
-		wxStaticLine* m_staticline1;
 		wxBoxSizer* m_contentSizer;
 		wxStdDialogButtonSizer* m_dialogButtonSizer;
 		wxButton* m_dialogButtonSizerCancel;
@@ -113,7 +111,7 @@ class NetplayLobbyPanelBase : public wxPanel
 		wxTextCtrl* m_NetplayChatTextCtrl;
 		wxTextCtrl* m_NetplayConsoleEntryTextCtrl;
 		wxButton* m_sendButton;
-		wxListBox* m_playersBox;
+		wxListCtrl* m_playersBox;
 		wxButton* m_moveUpButton;
 		wxButton* m_moveDownButton;
 		wxButton* m_startButton;

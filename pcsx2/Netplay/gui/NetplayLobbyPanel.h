@@ -1,5 +1,6 @@
 #include "NetplayDialogBase.h"
 #include <functional>
+#include "Netplay/INetplayDialog.h"
 
 class NetplayLobbyPanel : public NetplayLobbyPanelBase
 {
@@ -13,7 +14,7 @@ public:
     void SetInputDelay(int value);
     int GetInputDelay();
     void UpdateHostModeUI(bool host = true);
-    void SetUserlist(const std::vector<std::string> &usernames);
+    void SetUserlist(const std::vector<userinfo> &usernames, int num_players);
     void AddChatMessage(const std::string &username, const std::string &message);
     void EnableOnlyChat();
 

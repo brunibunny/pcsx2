@@ -2,6 +2,12 @@
 #include <functional>
 #include "NetplaySettings.h"
 
+typedef struct
+{
+    std::string name;
+    std::string ping;
+    int side;
+} userinfo;
 
 class INetplayDialog
 {
@@ -31,7 +37,7 @@ public:
 	virtual void SetInputDelay(int input_delay) = 0;
 	virtual void SetStatus(const wxString& status) = 0;
 
-	virtual void SetUserlist(const std::vector<std::string> &usernames) = 0;
+	virtual void SetUserlist(const std::vector<userinfo> &usernames, int num_players) = 0;
 
 	virtual void SetSendChatMessageHandler(const std::function<void(std::string message)>& handler) = 0;
 	virtual void AddChatMessage(const std::string &username, const std::string &message) = 0;

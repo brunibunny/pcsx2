@@ -29,10 +29,11 @@ public:
 	{
 	}
 
-	void HandleUsernames(const std::vector<std::string> &usernames)
+	void HandleUsernames(const std::vector<userinfo> &usernames)
 	{
+        int num_players = _session->num_players();
 		if (_dialog)
-			_dialog->SetUserlist(usernames);
+			_dialog->SetUserlist(usernames, num_players);
 	}
 
 	void HandleChatMessage(const std::string &username, const std::string &message)
@@ -81,7 +82,7 @@ public:
 
 		shoryu::prepare_io_service();
 		_session.reset(new session_type());
-		_session->userlist_handler([&](const std::vector<std::string> &usernames) {HandleUsernames(usernames); });
+		_session->userlist_handler([&](const std::vector<userinfo> &usernames) {HandleUsernames(usernames); });
 		_session->set_chatmessage_handler([&](const std::string &username, const std::string &message) {HandleChatMessage(username, message); });
 #ifdef CONNECTION_TEST
 		_session->send_delay_min(40);

@@ -62,7 +62,7 @@ namespace shoryu
 		MessageType cmd;
 		StateType state;
 		int64_t frame_id;
-		std::vector<std::string> usernames;
+		std::vector<userinfo> usernames;
 		zed_net_address_t host_ep;
 		uint32_t rand_seed;
 		uint8_t delay;
@@ -111,10 +111,17 @@ namespace shoryu
 				a << rand_seed << side << mcdsync << num_players;
 				for(size_t i = 0; i < num_players; i++)
 				{
-					length = usernames[i].length();
+					length = usernames[i].name.length();
 					a << length;
-					if(length)
-						a.write((char*)usernames[i].c_str(), usernames[i].length());
+                    if (length)
+                        a.write((char *)usernames[i].name.c_str(), usernames[i].name.length());
+                    length = usernames[i].ping.length();
+
+                    a << length;
+                    if (length)
+						a.write((char *)usernames[i].ping.c_str(), usernames[i].ping.length());
+
+                    a << usernames[i].side;
 				}
 				a << state;
 				break;
@@ -182,15 +189,24 @@ namespace shoryu
 				repeat(num_players)
 				{
 					size_t length;
+                    userinfo _userinfo;
 					a >> length;
 					if(length > 0)
 					{
 						std::auto_ptr<char> str(new char[length]);
 						a.read(str.get(), length);
-						usernames.push_back(std::string(str.get(), str.get()+length));
-					}
+                        _userinfo.name = std::string(str.get(), str.get() + length);
+
+						a >> length;
+                        str.reset(new char[length]);
+                        a.read(str.get(), length);
+                        _userinfo.ping = std::string(str.get(), str.get() + length);
+
+						a >> _userinfo.side;
+                        usernames.push_back(_userinfo);
+                    }
 					else
-						usernames.push_back(std::string());
+                        usernames.push_back(_userinfo);
 				}
 				a >> state;
 				break;
@@ -225,11 +241,6 @@ namespace shoryu
 		typedef std::vector<frame_map> frame_table;
 		typedef std::function<bool(const StateType&, const StateType&)> state_check_handler_type;
 		typedef std::vector<std::unordered_map<int64_t, message_data>> data_table;
-        typedef struct
-        {
-            std::string name;
-            std::string ping;
-        } userinfo;
 	public:
 #ifdef SHORYU_ENABLE_LOG
 		std::fstream log;
@@ -273,7 +284,7 @@ namespace shoryu
 					for (auto i_ep = m_clientEndpoints.begin(); i_ep != m_clientEndpoints.end();)
 					{
 						// update ping value
-                        _username_map[*i_ep].ping = std::to_string(_async.peer(*i_ep).rtt_avg);
+                        _username_map[*i_ep].ping = std::to_string(_async.peer(*i_ep).rtt_avg) + std::string(" ms");
 
 						// send info
                         queue_info();
@@ -414,7 +425,7 @@ namespace shoryu
             m_mcd_sync = g_Conf->Netplay.MemcardSync;
 			if(m_userlist_handler)
 			{
-				std::vector<std::string> list;
+				std::vector<userinfo> list;
 				list.push_back(_username);
 				m_userlist_handler(list);
 			}
@@ -549,7 +560,7 @@ namespace shoryu
 			msg.num_players = m_num_players;
 			msg.usernames.push_back(_username);
 			for (auto &ep : m_clientEndpoints)
-                msg.usernames.push_back(_username_map[ep].name + std::string(" ~ ") + _username_map[ep].ping + std::string(" ms"));
+               msg.usernames.push_back(_username_map[ep]);
 			if (m_userlist_handler)
 				m_userlist_handler(msg.usernames);
 
@@ -558,6 +569,7 @@ namespace shoryu
 			{
 				auto &ep = m_clientEndpoints[i];
 				msg.side = i + 1;
+                _username_map[ep].side = msg.side;
 				_async.queue(ep, msg);
 #ifdef SHORYU_ENABLE_LOG
 				log << "[" << time_ms() - log_start << "] Info --^ " << zed_net_host_to_str(ep.host) << ":" << ep.port << "\n";
@@ -774,13 +786,14 @@ namespace shoryu
 		}
 		const std::string& username()
 		{
-			return _username;
+			return _username.name;
 		}
 		void username(const std::string& name)
 		{
-			_username = name;
+			_username.name = name;
+            _username.side = 0;
 		}
-		inline void userlist_handler(std::function<const void(std::vector<std::string>)> handler)
+		inline void userlist_handler(std::function<const void(std::vector<userinfo>)> handler)
 		{
 			m_userlist_handler = handler;
 		}
@@ -791,7 +804,7 @@ namespace shoryu
 		inline void send_chatmessage(const std::string &message)
 		{
 			message_type msg(MessageType::Chat);
-			msg.username = _username;
+			msg.username = _username.name;
 			msg.lobby_message = message;
 			queue_message(msg);
 			send();
@@ -893,6 +906,8 @@ namespace shoryu
 			if(msg.cmd == MessageType::Join)
 			{
 				_username_map[ep].name = msg.username;
+                _username_map[ep].side = m_clientEndpoints.size() + 1;
+
 				if(!_state_check_handler(_state, msg.state))
 				{
 					message_type msg(MessageType::Deny);
@@ -958,7 +973,7 @@ namespace shoryu
 				if(timeout > 0 && (time_ms() - start_time > timeout))
 					return false;
 				message_type msg(MessageType::Join);
-				msg.username = _username;
+				msg.username = _username.name;
 				msg.host_ep = host_ep;
 				msg.state = _state;
 				if (!send(host_ep))
@@ -1122,7 +1137,7 @@ namespace shoryu
 		int _side;
 		bool _end_session_request;
 		
-		std::string _username;
+		userinfo _username;
 		typedef std::map<zed_net_address_t, userinfo> username_map;
 
 		username_map _username_map;
@@ -1143,7 +1158,7 @@ namespace shoryu
 		std::condition_variable _data_cond;
 		data_table _data_table;
 
-		std::function<const void(std::vector<std::string>)> m_userlist_handler;
+		std::function<const void(std::vector<userinfo>)> m_userlist_handler;
 		std::unique_ptr<std::thread> m_ping_thread;
 		bool m_ping_clients;
 	};
